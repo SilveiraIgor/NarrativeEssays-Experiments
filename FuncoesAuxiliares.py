@@ -110,7 +110,7 @@ def arrumar_dados_treinamento(comp, tipo):
             treinamento = pd.concat([dados['treinamento'], dados['validacao']] , axis=0   )
         else:
             treinamento = dados['treinamento']
-    elif tipo in ['iR4S', 'iR4S_merge', 'pteu_full', 'pteu_full_sem_merge', 'iR4S-F', 'iR4S-F_merge']:
+    elif tipo in ['iR4S', 'iR4S_merge', 'completo', 'completo_sem_merge', 'iR4S-F', 'iR4S-F_merge']:
         dados = get_dados(comp)
         colunas = list(dados['treinamento'].columns)
         colunas.remove('index_text')
@@ -135,14 +135,14 @@ def arrumar_dados_treinamento(comp, tipo):
                 lista_colunas = treinamento.columns
                 filtrar = filtrar_colunas(lista_colunas)
                 treinamento = treinamento.drop(filtrar, axis=1)
-        elif tipo in ['pteu_full', 'pteu_full_sem_merge']:
+        elif tipo in ['completo', 'completo_sem_merge']:
             dados['treinamento']['competencia'] = dados['treinamento'].apply(selecionar_comp(comp), axis=1)
             dados['treinamento'] = pd.merge(dados['treinamento'], dados['treinamento_pteu'],on='index_text', how='inner')
             dados['treinamento'] = pd.merge(pd.merge(dados['treinamento'], dados['treinamento_bert_regression'], on='index_text', how='inner'), dados['treinamento_bert_classification'], on='index_text', how='inner').drop(['grade', 'index_text', 'id'], axis=1)
             dados['validacao']['competencia'] = dados['validacao'].apply(selecionar_comp(comp), axis=1)
             dados['validacao'] = pd.merge(dados['validacao'], dados['validacao_pteu'],on='index_text', how='inner')
             dados['validacao'] = pd.merge(pd.merge(dados['validacao'], dados['validacao_bert_regression'], on='index_text', how='inner'), dados['validacao_bert_classification'], on='index_text', how='inner').drop(['grade', 'index_text', 'id'], axis=1)
-            if tipo in ['pteu_full']:
+            if tipo in ['completo']:
                 treinamento = pd.concat([dados['treinamento'], dados['validacao']], axis=0)
             else:
                 treinamento = dados['treinamento']
@@ -248,7 +248,7 @@ def get_novos_dados(comp, tipo):
             filtrar = filtrar_colunas(dados['teste'].columns)
             dados['validacao'] = dados['teste'].drop(filtrar, axis=1)
             dados['teste'] = dados['teste'].drop(filtrar, axis=1)
-    elif tipo in ['pteu_full', 'pteu_full_sem_merge']:
+    elif tipo in ['completo', 'completo_sem_merge']:
         dados = get_dados(comp)
         dados['teste']['competencia'] = dados['teste'].apply(selecionar_comp(comp), axis=1)
         dados['teste'] = pd.merge(dados['teste'], dados['teste_pteu'],on='index_text', how='inner')
